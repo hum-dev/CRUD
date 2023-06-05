@@ -1,8 +1,9 @@
 import { useState } from 'react'
 
 import './App.css'
+import Task from './Task';
 
-function App() {
+function App () {
   const [todoList, setTodoList] = useState([]);
 
   const [newTask, setNewTask] = useState("");
@@ -11,42 +12,51 @@ function App() {
     setNewTask(event.target.value);
   };
 
-const addTask = () => {
-  setTodoList([...todoList, newTask]);
- 
-  const deleteTask = (taskName) => {
-    setTodoList(todoList.filter((task) => task !== taskName) 
-    
+  const addTask = () => {
+    const task = {
+      id: todoList.length === 0 ? 1 :todoList[todoList.length - 1].id + 1,
+      taskName: newTask,
+      complete: false,
+    };
+    setTodoList([...todoList, task]);
+  };
+
+  const deleteTask = (id) => {
+    setTodoList(todoList.filter((task) => task.id !== id));
+  };
+
+  const completeTask = (id) => {
+    setTodoList(
+      todoList.map((task) => {
+        if (task.id === id) {
+          return { ...task, completed: true };
+        } else {
+          return task;
+        }
+      })
     );
   };
   
-};
   return (
-    
     <div className="app">
-     <div className="add-task">
+      <div className="addTask">
         <input type="text" placeholder="Add Task" onChange={handleChange}/>
         <button onClick={addTask}>Add</button>
-     </div>
-     <div className="list">
-     {
-      todoList.map( ( task ) => {
-        return (
-          <>
-          <div className="task-container">
-              <h1 className="task">{task}</h1>
-              <button onClick= {() => deleteTask(task)}>X</button>
-          </div>
-          </>
-        );
-
-      })}
-     
-     </div>
-     
+      </div>
+      <div className="list">
+        {todoList.map((task) => {
+          return (
+            <Task
+              key={task.id}
+              task={task}
+              deleteTask={deleteTask}
+              completeTask={completeTask}
+            />
+          );
+        })}
+      </div>
     </div>
-    
   );
 }
 
-export default App
+export default App;
